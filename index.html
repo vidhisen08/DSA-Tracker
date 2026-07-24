@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DSA Tracker — LeetCode Company Questions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loadingScreen">
+  <div class="loader-logo">DSA <span>Tracker</span></div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div id="loadingStatus">Starting…</div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <h1>DSA <span>Tracker</span></h1>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><strong id="totalQ">—</strong> questions</div>
+    <div class="stat-item"><strong id="totalC">—</strong> companies</div>
+    <div class="stat-item">Updated <strong>May 2026</strong></div>
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside>
+
+    <!-- Progress Ring -->
+    <div class="progress-widget">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 120 120" width="100" height="100">
+          <!-- track -->
+          <circle class="ring-track" cx="60" cy="60" r="50"/>
+          <!-- easy arc -->
+          <circle class="ring-arc easy-arc" id="easyArc"
+            cx="60" cy="60" r="50"
+            stroke-dasharray="0 314.16" stroke-dashoffset="314.16"/>
+          <!-- medium arc -->
+          <circle class="ring-arc medium-arc" id="medArc"
+            cx="60" cy="60" r="50"
+            stroke-dasharray="0 314.16" stroke-dashoffset="314.16"/>
+          <!-- hard arc -->
+          <circle class="ring-arc hard-arc" id="hardArc"
+            cx="60" cy="60" r="50"
+            stroke-dasharray="0 314.16" stroke-dashoffset="314.16"/>
+        </svg>
+        <div class="ring-center">
+          <span class="ring-solved" id="ringSolvedCount">0</span>
+          <span class="ring-total-lbl" id="ringTotalCount">/ 0</span>
+        </div>
+      </div>
+      <div class="progress-stats">
+        <div class="progress-stat easy">
+          <span class="dot"></span>Easy
+          <span id="easyCount">0/0</span>
+        </div>
+        <div class="progress-stat medium">
+          <span class="dot"></span>Medium
+          <span id="mediumCount">0/0</span>
+        </div>
+        <div class="progress-stat hard">
+          <span class="dot"></span>Hard
+          <span id="hardCount">0/0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search -->
+    <div class="filter-group">
+      <label>Search</label>
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="searchInput" placeholder="title or #number…" autocomplete="off"/>
+      </div>
+    </div>
+
+    <!-- Difficulty -->
+    <div class="filter-group">
+      <label>Difficulty</label>
+      <div class="chip-group">
+        <button class="chip active" data-diff="all">All</button>
+        <button class="chip easy"   data-diff="Easy">Easy</button>
+        <button class="chip medium" data-diff="Medium">Medium</button>
+        <button class="chip hard"   data-diff="Hard">Hard</button>
+      </div>
+    </div>
+
+    <!-- Time Window -->
+    <div class="filter-group">
+      <label>Time Window</label>
+      <select id="timeWindow">
+        <option value="all">All Time</option>
+        <option value="six-months">Last 6 Months</option>
+        <option value="three-months">Last 3 Months</option>
+        <option value="thirty-days">Last 30 Days</option>
+        <option value="more-than-six-months">More Than 6 Months</option>
+      </select>
+    </div>
+
+    <!-- Company -->
+    <div class="filter-group">
+      <label>Company</label>
+      <select id="companyFilter">
+        <option value="all">All Companies</option>
+      </select>
+    </div>
+
+    <!-- Pattern -->
+    <div class="filter-group">
+      <label>DSA Pattern</label>
+      <div class="pattern-list" id="patternList"></div>
+    </div>
+
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <div class="toolbar">
+      <div id="resultsInfo">Loading…</div>
+      <div class="sort-controls">
+        <span class="sort-label">Sort:</span>
+        <button class="sort-btn active" data-sort="freq">Frequency</button>
+        <button class="sort-btn"        data-sort="id">ID</button>
+        <button class="sort-btn"        data-sort="title">Title</button>
+        <button class="sort-btn"        data-sort="companies">Companies</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>#</th>
+            <th>Title</th>
+            <th>Difficulty</th>
+            <th>Pattern</th>
+            <th>Companies</th>
+            <th>Freq %</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div id="modalTitle"></div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-meta" id="modalMeta"></div>
+    <div class="modal-freq" id="modalFreq"></div>
+    <div class="modal-section">
+      <h3>Asked By (<span id="modalCompanyCount">0</span> companies)</h3>
+      <div class="companies-grid" id="modalCompanies"></div>
+    </div>
+    <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+      <a id="modalLink" class="lc-link" href="#" target="_blank" rel="noopener">
+        Open on LeetCode ↗
+      </a>
+      <button class="modal-solve-btn" id="modalSolveBtn">Mark as Solved</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPTS (order matters) -->
+<script src="js/patterns.js"></script>
+<script src="js/data.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/render.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
